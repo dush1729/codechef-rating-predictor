@@ -22,11 +22,11 @@ module.exports = function()
 			headers: { 'User-Agent': 'Mozilla/5.0' },
 		};
 
+        var source = "";
         httpobj.get(options, function(res)
         {
             res.setEncoding("utf8");
             
-            var source = "";
             res.on("data", function(data)
             {
                 source += data;
@@ -67,9 +67,8 @@ module.exports = function()
     //openshift configuration
     if (process.env.MONGODB_PASSWORD)
     {
-        this.mongourl = "mongodb://" + process.env.MONGODB_USER + ":" +  process.env.MONGODB_PASSWORD
-        + "@" + process.env.MONGODB_SERVICE_HOST + ':' +  process.env.MONGODB_SERVICE_PORT 
-        + '/' + process.env.MONGODB_DATABASE;
+        this.mongourl = "mongodb+srv://" + process.env.MONGODB_USER + ":" +  process.env.MONGODB_PASSWORD
+        + "@" + process.env.MONGODB_SERVICE_HOST
     }
 
 };
