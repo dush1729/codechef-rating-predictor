@@ -501,10 +501,11 @@ module.exports = function(nextcall)
 
 		db.collection("checklist").find({}).toArray(function(err, cdatas)
 		{
-			cdatas.forEach(function(x)
-			{
-				contestLists.push(x);
-			});
+			if(cdatas) {
+				cdatas.forEach(function(x) {
+					contestLists.push(x);
+				});
+			}
 
 			processContests();
 		});

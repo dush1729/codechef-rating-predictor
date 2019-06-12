@@ -67,8 +67,7 @@ module.exports = function()
     //openshift configuration
     if (process.env.MONGODB_PASSWORD)
     {
-        this.mongourl = "mongodb+srv://" + process.env.MONGODB_USER + ":" +  process.env.MONGODB_PASSWORD
-        + "@" + process.env.MONGODB_SERVICE_HOST
+        this.mongourl = "mongodb://" + process.env.MONGODB_USER + ":" + process.env.MONGODB_PASSWORD + "@" +
+        process.env.MONGODB_SERVICE_HOST
     }
-
 };

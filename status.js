@@ -163,10 +163,11 @@ module.exports = function(nextcall)
 
 		db.collection("checklist").find({}).toArray(function(err, cdatas)
 		{
-			cdatas.forEach(function(x)
-			{
-				contestIDS.push(x.contest);
-			});
+			if(cdatas) {
+				cdatas.forEach(function(x) {
+					contestIDS.push(x.contest);
+				});
+			}
 
 			processContests();
 		});
