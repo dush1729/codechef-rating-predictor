@@ -63,7 +63,8 @@ MongoClient.connect(mongourl, function(err, db)
 	})
 
 	app.get('/add/:contest', function(req,res) {
-		var cid = req.params.contest;
+		res.render("error", {message: "Sorry, Adding new contest is disabled for sometime. Please enter JUNE19A or JUNE19B as contest code."})
+		/*var cid = req.params.contest;
 		checklist.findOneAndReplace(
 			{
 				contest: cid,
@@ -83,7 +84,7 @@ MongoClient.connect(mongourl, function(err, db)
 				} else {
 					res.render("error", {message: "Couldnot add to checklist"});
 				}
-			})
+			})*/
 	})
 
 	app.get('/contest/:contestid/:type', function(req, res)
