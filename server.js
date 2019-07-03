@@ -63,7 +63,7 @@ MongoClient.connect(mongourl, function(err, db)
 	})
 
 	app.get('/add/:contest', function(req,res) {
-		res.render("error", {message: "Sorry, Adding new contest is disabled for sometime. Please enter JUNE19A or JUNE19B as contest code."})
+		res.render("error", {message: "Sorry, Adding new contest is disabled."})
 		/*var cid = req.params.contest;
 		checklist.findOneAndReplace(
 			{
