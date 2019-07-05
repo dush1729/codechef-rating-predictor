@@ -127,7 +127,7 @@ MongoClient.connect(mongourl, function(err, db)
 				res.status(404);
 				var link = req.protocol + "://" + req.get('host') + "/add/" + req.params.contestid
 				res.render("error", {
-					message: "No contest predictions found for such contest! Click the button to add contest.",
+					message: "No contest predictions found for such contest! Please enter correct contest code.",
 					link: link});
 			}
 		});
