@@ -9,35 +9,29 @@ var contestid;
 var usercollection;
 var collection;
 
-function parseUserContest(code, funcproblem, callback, trycount)
-{
-	if (trycount < 0)
-	{
-		checklistcollection.findOneAndDelete({'contest': code});
+function parseUserContest(code, funcproblem, callback, trycount) {
+	if (trycount < 0) {
+		checklistcollection.findOneAndDelete({ 'contest': code });
 		return;
 	}
 
 	var url = "https://www.codechef.com/api/contests/" + code;
-	execHttps(url, function(source)
-	{
-		if (source.indexOf('"status":"success"') == -1)
-		{
-			parseUserContest(code, funcproblem, callback, trycount-1);
+	execHttps(url, function (source) {
+		if (source.indexOf('"status":"success"') == -1) {
+			parseUserContest(code, funcproblem, callback, trycount - 1);
 			return;
 		}
 
 		var obj = JSON.parse(source);
-		
-		async.each(obj.problems, funcproblem, function(err)
-		{
+
+		async.each(obj.problems, funcproblem, function (err) {
 			callback(err);
 		});
 
 	}, 3);
-} 
+}
 
-function parseStatusPage(contestid, problemid, pageno, callback, trycount)
-{
+function parseStatusPage(contestid, problemid, pageno, callback, trycount) {
 	/*
 	if (trycount < 0)
 	{
@@ -47,40 +41,33 @@ function parseStatusPage(contestid, problemid, pageno, callback, trycount)
 	*/
 
 	var url = util.format('https://www.codechef.com/%s/status/%s?page=%s&sort_by=Date%2FTime&sorting_order=asc', contestid, problemid, pageno);;
-	execHttps(url, function(source)
-	{
+	execHttps(url, function (source) {
 		var $ = cheerio.load(source);
-		var lastpage = parseInt($('.pageinfo').text().split(' ')[2]) - 1;		
-		
-		if (source.indexOf("pageinfo") == -1)
-		{
+		var lastpage = parseInt($('.pageinfo').text().split(' ')[2]) - 1;
+
+		if (source.indexOf("pageinfo") == -1) {
 			//parseStatusPage(contestid, problemid, pageno, callback, trycount-1);
 			//return;
 			lastpage = pageno;
 		}
 
-		$('table[class="dataTable"]>tbody>tr>td>a').each(function(i, data)
-		{
+		$('table[class="dataTable"]>tbody>tr>td>a').each(function (i, data) {
 			var username = $(data).attr('title');
-			try
-			{
-				usercollection.insert({contestid: contestid, user: username});
+			try {
+				usercollection.insert({ contestid: contestid, user: username });
 			}
-			catch (ex)
-			{
+			catch (ex) {
 			}
 		});
 
-		collection.update({problemid: problemid}, {$set: {pagedone: pageno}}, {upsert: true});
-		
+		collection.update({ problemid: problemid }, { $set: { pagedone: pageno } }, { upsert: true });
+
 		console.log("Current page", pageno, lastpage, url, $('.pageinfo').text());
-	
-		if (pageno < lastpage)
-		{
-			parseStatusPage(contestid, problemid, pageno+1, callback, 2);
+
+		if (pageno < lastpage) {
+			parseStatusPage(contestid, problemid, pageno + 1, callback, 2);
 		}
-		else
-		{
+		else {
 			callback();
 		}
 	}, 4);
@@ -88,23 +75,20 @@ function parseStatusPage(contestid, problemid, pageno, callback, trycount)
 
 require("./helper.js")();
 
-module.exports = function(nextcall)
-{
-	
+module.exports = function (nextcall) {
+
 	var contestIDS = [];
 
-	MongoClient.connect(mongourl, function(err, db)
-	{
-		if (err)
-		{
+	MongoClient.connect(mongourl, function (err, db) {
+		if (err) {
 			throw err;
 		}
 
 		collection = db.collection("status");
-		usercollection = db.collection("user");	
+		usercollection = db.collection("user");
 		checklistcollection = db.collection("checklist");
 
-		usercollection.createIndex({contestid: 1, user: 1}, {unique: true });
+		usercollection.createIndex({ contestid: 1, user: 1 }, { unique: true });
 
 		/*
 		bad way
@@ -116,55 +100,45 @@ module.exports = function(nextcall)
 		}
 		*/
 
-		var processContests = function()
-		{
-			async.eachSeries(contestIDS, function(ciid, callback)
-			{
+		var processContests = function () {
+			async.eachSeries(contestIDS, function (ciid, callback) {
 				contestid = ciid;
-				
-				parseUserContest(contestid, function(problem, callback)
-				{
+
+				parseUserContest(contestid, function (problem, callback) {
 					var problemid = problem.code;
-					collection.findOne({problemid: problemid}, function(err, obj)
-					{
+					collection.findOne({ problemid: problemid }, function (err, obj) {
 						var lastpage = (obj !== null ? obj.pagedone : 0);
 						console.log(problemid, lastpage);
 						parseStatusPage(contestid, problemid, lastpage, callback, 9);
 					});
 				},
-				function(err)
-				{
-					if (err)
-					{
-						console.log("Error in parsing", contestid, err);
-					}
-					else
-					{
-						console.log("Completed parsing", contestid);
-					}
+					function (err) {
+						if (err) {
+							console.log("Error in parsing", contestid, err);
+						}
+						else {
+							console.log("Completed parsing", contestid);
+						}
 
-					callback(err);
-				}, 9);
+						callback(err);
+					}, 9);
 			},
-			function (err)
-			{
-				if (err)
-				{
-					console.log("Error", err);
-					throw err;
-				}
+				function (err) {
+					if (err) {
+						console.log("Error", err);
+						throw err;
+					}
 
-				db.close();
-				console.log("Completed ALL");
+					db.close();
+					console.log("Completed ALL");
 
-				setImmediate(nextcall);
-			});
+					setImmediate(nextcall);
+				});
 		};
 
-		db.collection("checklist").find({}).toArray(function(err, cdatas)
-		{
-			if(cdatas) {
-				cdatas.forEach(function(x) {
+		db.collection("checklist").find({}).toArray(function (err, cdatas) {
+			if (cdatas) {
+				cdatas.forEach(function (x) {
 					contestIDS.push(x.contest);
 				});
 			}

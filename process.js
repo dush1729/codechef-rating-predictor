@@ -3,42 +3,35 @@ var processLogFile = 'process.txt';
 
 var isWorking = false;
 
-module.exports = function (force)
-{
-    if(force === undefined) {
+module.exports = function (force) {
+    if (force === undefined) {
         force = false;
     }
 
     var processnow = false;
 
-    if (isWorking)
-    {
+    if (isWorking) {
         processnow = false;
     }
-    else if (fs.existsSync(processLogFile))
-    {
+    else if (fs.existsSync(processLogFile)) {
         var contents = fs.readFileSync(processLogFile, 'utf8');
         var dt = new Date(contents);
-        if (dt == undefined)
-        {
+        if (dt == undefined) {
             processnow = true;
         }
-        else
-        {
-            var seconds = (new Date() - dt)/1000;
-            if (seconds > 4*60 || force) //4 minutes
+        else {
+            var seconds = (new Date() - dt) / 1000;
+            if (seconds > 4 * 60 || force) //4 minutes
             {
                 processnow = true;
             }
         }
     }
-    else
-    {
+    else {
         processnow = true;
     }
 
-    if (processnow)
-    {
+    if (processnow) {
         var dt = new Date().toString();
         fs.writeFileSync(processLogFile, dt);
         console.log("Starting process", dt);
@@ -47,11 +40,9 @@ module.exports = function (force)
         var generator = require("./generate.js");
 
         isWorking = true;
-		
-        status(function()
-        {
-            generator(function()
-            {
+
+        status(function () {
+            generator(function () {
                 isWorking = false;
             })
         });
