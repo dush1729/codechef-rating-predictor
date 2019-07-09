@@ -6,6 +6,7 @@ var express = require("express");
 var app = express();
 
 app.set('view engine', 'ejs');
+app.use(express.static(__dirname + '/public'));
 
 //from snipplr
 function elapsedTime(createdAt) {
@@ -56,7 +57,7 @@ MongoClient.connect(mongourl, function (err, db) {
 	var processor = require("./process.js");
 
 	app.get('/', function (req, res) {
-		res.send("Try <a href='/contest/OCT18B/all'>OCT18B</a>");
+		res.render('landing');
 	})
 
 	app.get('/add/:contest', function (req, res) {
