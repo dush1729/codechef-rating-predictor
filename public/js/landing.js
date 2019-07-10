@@ -1,5 +1,11 @@
-var createCookie = function (name, value) {
-    document.cookie = name + "=" + value + "; path=/";
+function createCookie(name, value, days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
 }
 
 function getCookie(c_name) {
@@ -61,9 +67,9 @@ document.getElementById("predictButton").onclick = function () {
         url += "/" + ratingTypes[contestType];
     }
 
-    createCookie("contestType", document.getElementById("contestType").selectedIndex)
-    createCookie("contestDivision", document.getElementById("contestDivision").selectedIndex)
-    createCookie("ratingType", document.getElementById("ratingType").selectedIndex)
+    createCookie("contestType", document.getElementById("contestType").selectedIndex, 30)
+    createCookie("contestDivision", document.getElementById("contestDivision").selectedIndex, 30)
+    createCookie("ratingType", document.getElementById("ratingType").selectedIndex, 30)
     window.location = url
 }
 

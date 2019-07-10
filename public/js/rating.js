@@ -1,6 +1,13 @@
-var createCookie = function (name, value) {
-    document.cookie = name + "=" + value + "; path=/";
+function createCookie(name, value, days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
 }
+
 
 function getCookie(c_name) {
     if (document.cookie.length > 0) {
@@ -34,5 +41,5 @@ document.getElementById("themeButton").onclick = function () {
         newTheme = dark;
     }
     link.setAttribute("href", newTheme);
-    createCookie("theme", newTheme);
+    createCookie("theme", newTheme, 365);
 }
