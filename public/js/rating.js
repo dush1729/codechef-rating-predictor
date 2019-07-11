@@ -28,11 +28,6 @@ const dark = "/css/rating.css";
 const light = "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css";
 
 var link = document.getElementById("theme");
-if (getCookie("theme") == dark) {
-    link.setAttribute("href", dark);
-} else {
-    link.setAttribute("href", light);
-}
 document.getElementById("themeButton").onclick = function () {
     var newTheme;
     if (link.getAttribute("href") == dark) {

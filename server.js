@@ -4,9 +4,11 @@ var util = require("util");
 var cheerio = require("cheerio");
 var express = require("express");
 var app = express();
+var cookieParser = require('cookie-parser');
 
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
+app.use(cookieParser());
 
 //from snipplr
 function elapsedTime(createdAt) {
@@ -106,8 +108,8 @@ MongoClient.connect(mongourl, function (err, db) {
 							}
 
 							var typename = req.params.type[0].toUpperCase() + req.params.type.slice(1);
-
-							res.render('rating', { elapsed: elapsedTime(dateobj.date), contest: req.params.contestid, type: req.params.type, typename: typename, result: result });
+							var theme = (req.cookies.theme ? req.cookies.theme : "/css/rating.css");
+							res.render('rating', { elapsed: elapsedTime(dateobj.date), contest: req.params.contestid, type: req.params.type, typename: typename, result: result, theme: theme });
 						});
 					}
 					else {
