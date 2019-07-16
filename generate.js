@@ -330,6 +330,7 @@ function calculateRating(callback) {
 			data.rank = curr.rank;
 			data.previous = curr.rating[type];
 			data.rating = NRa;
+			data.erank = Math.floor(EPerf);
 
 			dataInsertions.push(data);
 

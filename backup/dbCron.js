@@ -20,7 +20,7 @@ exports = function () {
 	Learn more about http client here: https://docs.mongodb.com/stitch/functions/context/#context-http
 	*/
 
-    const db = context.services.get("codechef-rating-predictor").db("test2");
+    const db = context.services.get("codechef-rating-predictor").db("test");
 
     db.collection("cache").deleteMany({});
     db.collection("checklist").deleteMany({});
@@ -29,13 +29,18 @@ exports = function () {
     db.collection("status").deleteMany({});
     db.collection("user").deleteMany({});
 
-    const checklist = db.collection("checklist");
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getMonth();
+    const monthsPassed = (2019 - year) * 12 + month;
 
-    const cookOffCode = 102 + (2019 - year) * 12 + month;
-    checklist.insertMany([
+    const cookOffCode = monthsPassed + 102;
+    const lunchtimeCode = monthsPassed + 68;
+    const longCode = [
+        "JAN", "FEB", "MARCH", "APRIL", "MAY", "JUNE",
+        "JULY", "AUG", "SEPT", "OCT", "NOV", "DEC"
+    ];
+    db.collection("checklist").insertMany([
         {
             "contest": "COOK" + cookOffCode + "A",
             "parse": ["all", "short"]
@@ -43,10 +48,7 @@ exports = function () {
         {
             "contest": "COOK" + cookOffCode + "B",
             "parse": ["all", "short"]
-        }]);
-
-    const lunchtimeCode = 68 + (2019 - year) * 12 + month;
-    checklist.insertMany([
+        },
         {
             "contest": "LTIME" + lunchtimeCode + "A",
             "parse": ["all", "ltime"]
@@ -54,13 +56,7 @@ exports = function () {
         {
             "contest": "LTIME" + lunchtimeCode + "B",
             "parse": ["all", "ltime"]
-        }]);
-
-    const longCode = [
-        "JAN", "FEB", "MARCH", "APRIL", "MAY", "JUNE",
-        "JULY", "AUG", "SEPT", "OCT", "NOV", "DEC"
-    ];
-    checklist.insertMany([
+        },
         {
             "contest": longCode[month] + year.toString().substring(2) + "A",
             "parse": ["all", "long"]

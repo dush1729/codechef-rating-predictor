@@ -26,6 +26,7 @@
 			<table class="table table-dark">
 				<thead class="thead-dark">
 					<tr>
+						<th>Seed</th>
 						<th>#</th>
 						<th>Username</th>
 						<th>Previous Rating</th>
@@ -38,6 +39,7 @@
 					<% result.forEach((user) => { %>
 					<tr <% if(user.change > 0) { %> class="bg-success" <% } %> <% if(user.change < 0) { %>
 						class="bg-danger" <% } %> <% if(user.change == 0) { %> class="bg-primary" <% } %>>
+						<td><%= user.erank %></th>
 						<td><%= user.rank %></th>
 						<td><%= user.user %></td>
 						<td><%= user.previous %></td>
