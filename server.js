@@ -59,7 +59,15 @@ MongoClient.connect(mongourl, function (err, db) {
 	var processor = require("./process.js");
 
 	app.get('/', function (req, res) {
-		res.render('landing');
+		var user = (req.cookies.user ? req.cookies.user : "");
+		datacollection.find({ user: user }).sort({ '_id': -1 }).toArray((err, result) => {
+			if (err)
+				throw err;
+			for (var i in result) {
+				result[i].change = result[i].rating - result[i].previous;
+			}
+			res.render('landing', { user: user, result: result });
+		})
 	})
 
 	app.get('/add/:contest', function (req, res) {
@@ -68,21 +76,21 @@ MongoClient.connect(mongourl, function (err, db) {
 		checklist.findOneAndReplace(
 			{
 				contest: cid,
-				 parse:['all']
+				parse: ['all']
 			},
 			{
 				contest: cid,
-				parse:['all']
+				parse: ['all']
 			},
 			{
 				upsert: true
 			},
-			function(err,result) {
-				if(result) {
+			function (err, result) {
+				if (result) {
 					processor(true);
-					res.redirect('/contest/'+cid+'/all');
+					res.redirect('/contest/' + cid + '/all');
 				} else {
-					res.render("error", {message: "Couldnot add to checklist"});
+					res.render("error", { message: "Couldnot add to checklist" });
 				}
 			})*/
 	})

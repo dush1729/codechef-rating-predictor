@@ -73,9 +73,7 @@ document.getElementById("predictButton").onclick = function () {
     window.location = url
 }
 
-document.onkeydown = function (evt) {
-    var keyCode = evt ? (evt.which ? evt.which : evt.keyCode) : event.keyCode;
-    if (keyCode == 13) {
-        $("#predictButton").trigger("click");
-    }
+document.getElementById("fetchButton").onclick = function () {
+    createCookie("user", document.getElementById("user").value, 365)
+    window.location.reload()
 }
