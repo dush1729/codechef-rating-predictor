@@ -47,7 +47,12 @@ function elapsedTime(createdAt) {
 
 //https://stackoverflow.com/a/40890687/5258585
 function filterIt(arr, searchKey) {
-	return elapsedTime(arr.filter(obj => Object.keys(obj).some(key => obj[key].toString().includes(searchKey)))[0].date);
+	var matches = arr.filter(obj => Object.keys(obj).some(key => obj[key].toString().includes(searchKey)))
+	if (matches.length == 0) {
+		return ""
+	} else {
+		return elapsedTime(matches[0].date);
+	}
 }
 
 require("./helper.js")();
