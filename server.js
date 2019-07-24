@@ -45,6 +45,11 @@ function elapsedTime(createdAt) {
 	return n + ' year' + s(n) + ' ago';
 }
 
+//https://stackoverflow.com/a/40890687/5258585
+function filterIt(arr, searchKey) {
+	return elapsedTime(arr.filter(obj => Object.keys(obj).some(key => obj[key].toString().includes(searchKey)))[0].date);
+}
+
 require("./helper.js")();
 
 MongoClient.connect(mongourl, function (err, db) {
@@ -59,15 +64,23 @@ MongoClient.connect(mongourl, function (err, db) {
 	var processor = require("./process.js");
 
 	app.get('/', function (req, res) {
+		processor();
 		var user = (req.cookies.user ? req.cookies.user : "");
-		datacollection.find({ user: user }).sort({ '_id': -1 }).toArray((err, result) => {
-			if (err)
-				throw err;
-			for (var i in result) {
-				result[i].change = result[i].rating - result[i].previous;
-			}
-			res.render('landing', { user: user, result: result });
-		})
+
+		var result = [];
+		datacollection.find({ user: user }).sort({ contest: 1 }).toArray().then(predictions => {
+			result = predictions;
+		}).then(() => {
+			return Promise.resolve(lastupdatecollection.find().toArray());
+		}).then(lastUpdated => {
+			result.forEach(element => {
+				element.elapsed = filterIt(lastUpdated, element.contest)
+			});
+		}).then(() => {
+			res.render('landing', { result: result, user: user });
+		}).catch(e => {
+			console.error(e);
+		});
 	})
 
 	app.get('/add/:contest', function (req, res) {

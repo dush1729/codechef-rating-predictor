@@ -23,19 +23,12 @@ function getCookie(c_name) {
     return 0;
 }
 
-const longCode = [
-    "JAN", "FEB", "MARCH", "APRIL", "MAY", "JUNE",
-    "JULY", "AUG", "SEPT", "OCT", "NOV", "DEC"];
-const ratingTypes = ["", "long", "short", "ltime"];
+function getUrl() {
+    const longCode = [
+        "JAN", "FEB", "MARCH", "APRIL", "MAY", "JUNE",
+        "JULY", "AUG", "SEPT", "OCT", "NOV", "DEC"];
+    const ratingTypes = ["", "long", "short", "ltime"];
 
-var contestType = document.getElementById("contestType");
-var contestDivision = document.getElementById("contestDivision");
-var ratingType = document.getElementById("ratingType");
-contestType.selectedIndex = getCookie("contestType")
-contestDivision.selectedIndex = getCookie("contestDivision")
-ratingType.selectedIndex = getCookie("ratingType")
-
-document.getElementById("predictButton").onclick = function () {
     var url = "http://ccpredict.herokuapp.com/contest/";
 
     var contestType = document.getElementById("contestType").value;
@@ -45,13 +38,14 @@ document.getElementById("predictButton").onclick = function () {
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getMonth();
+    const monthsPassed = (2019 - year) * 12 + month;
 
     if (contestType == 1) {
         url += longCode[month] + year.toString().substring(2);
     } else if (contestType == 2) {
-        url += "COOK" + (102 + (2019 - year) * 12 + month);
+        url += "COOK" + (monthsPassed + 102);
     } else {
-        url += "LTIME" + (68 + (2019 - year) * 12 + month);
+        url += "LTIME" + (monthsPassed + 68);
     }
 
     if (contestDivision == 1) {
@@ -67,11 +61,29 @@ document.getElementById("predictButton").onclick = function () {
         url += "/" + ratingTypes[contestType];
     }
 
+    return url;
+}
+
+document.getElementById("contestType").selectedIndex = getCookie("contestType");
+document.getElementById("contestDivision").selectedIndex = getCookie("contestDivision");
+document.getElementById("ratingType").selectedIndex = getCookie("ratingType");
+document.getElementById("predictButton").setAttribute("href", getUrl());
+
+function predictButtonClick() {
     createCookie("contestType", document.getElementById("contestType").selectedIndex, 30)
     createCookie("contestDivision", document.getElementById("contestDivision").selectedIndex, 30)
     createCookie("ratingType", document.getElementById("ratingType").selectedIndex, 30)
-    window.location = url
+    document.getElementById("predictButton").setAttribute("href", getUrl())
 }
+
+document.getElementById("predictButton").onclick = function () {
+    predictButtonClick()
+}
+
+//for middle button click
+document.getElementById("predictButton").addEventListener('auxclick', function (event) {
+    predictButtonClick()
+})
 
 document.getElementById("fetchButton").onclick = function () {
     createCookie("user", document.getElementById("user").value, 365)

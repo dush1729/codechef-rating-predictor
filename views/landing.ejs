@@ -1,22 +1,40 @@
-<html>
+<!DOCTYPE html>
+
+<html lang="en">
 
 <head>
     <title>Rating Predictor</title>
     <link rel="stylesheet" href="/css/landing.css">
+    <link rel="icon" href="/images/favicon.png">
 </head>
 
 <body>
-    <div class="container" style="display: flex; justify-content: center; align-items: center; height: 100vh">
-        <div class="card-coloumns">
+    <div class="container" style="display: flex; justify-content: center;">
+        <div class="card-coloumns" style="margin-top: 10px">
+
             <div class="card">
                 <div class="card-body">
-
                     <div class="row">
                         <div class="col-sm-8">
-                            <input id="user" class="form-control" type="text" placeholder="Username" value="<%= user %>"">
+                            <h3>Codechef Rating Predictor</h3>
                         </div>
-                        <div class=" col-sm-4">
-                            <button id="fetchButton" type="button" class="btn btn-primary btn-block">Fetch</button>
+                        <div class="col-sm-4">
+                            <a href="https://github.com/dush1729/codechef-rating-predictor"
+                                class="btn btn-primary btn-block" role="button">Github</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 10px">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <input id="user" class="form-control" type="text" placeholder="Username"
+                                value="<%= user %>">
+                        </div>
+                        <div class="col-sm-4">
+                            <a id="fetchButton" class="btn btn-primary btn-block" href="" role="button">Fetch</a>
                         </div>
                     </div>
 
@@ -31,20 +49,23 @@
                                     <th>Old</th>
                                     <th>New</th>
                                     <th>Delta</th>
+                                    <th>Last Updated</th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 <% result.forEach((user) => { %>
-                                <tr <% if(user.change > 0) { %> class="bg-success" <% } %> <% if(user.change < 0) { %>
-                                    class="bg-danger" <% } %> <% if(user.change == 0) { %> class="bg-primary" <% } %>>
+                                <% var change = user.rating - user.previous %>
+                                <tr <% if(change > 0) { %> class="bg-success" <% } %> <% if(change < 0) { %>
+                                    class="bg-danger" <% } %> <% if(change == 0) { %> class="bg-primary" <% } %>>
                                     <td><%= user.contest %></td>
                                     <td><%= user.type %></td>
                                     <td><%= user.erank %></th>
                                     <td><%= user.rank %></th>
                                     <td><%= user.previous %></td>
                                     <td><%= user.rating %></td>
-                                    <th><%= user.change %></td>
+                                    <th><%= change %></td>
+                                    <th><%= user.elapsed %></td>
                                 </tr>
                                 <% }) %>
                             </tbody>
@@ -52,30 +73,36 @@
                     </div>
                 </div>
             </div>
+
             <div class="card" style="margin-top: 10px">
                 <div class="card-body">
 
                     <div class="row">
-                        <div class="col-sm-12 text-center">
-                            <h1>Choose contest</h1>
+                        <div class="col-sm-8">
+                            <h3>Select Contest</h3>
+                        </div>
+                        <div class="col-sm-4">
+                            <a id="predictButton" class="btn btn-primary btn-block" href="" role="button">
+                                Ranklist
+                            </a>
                         </div>
                     </div>
 
                     <div class="row" style="margin-top:10px;">
-                        <div class="col-sm-4">
+                        <div class="col-sm-4 text-center">
                             <select id="contestType" class="btn btn-outline-danger btn-lg">
                                 <option value="1">Long</option>
                                 <option value="2">CookOff</option>
                                 <option value="3">LunchTime</option>
                             </select>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-4 text-center">
                             <select id="contestDivision" class="btn btn-outline-warning btn-lg">
                                 <option value="1">Division 1</option>
                                 <option value="2">Division 2</option>
                             </select>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-4 text-center">
                             <select id="ratingType" class="btn btn-outline-info btn-lg">
                                 <option value="1">All</option>
                                 <option value="2">Individual</option>
@@ -83,10 +110,6 @@
                         </div>
                     </div>
 
-                    <button id="predictButton" class="btn btn-primary btn-block" type="button"
-                        style="margin-top:100px;">
-                        Ranklist
-                    </button>
                 </div>
             </div>
         </div>
@@ -94,7 +117,7 @@
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
         crossorigin="anonymous"></script>
-    <script src="/js/landing.js" type="text/javascript"></script>
+    <script src="/js/landing.js"></script>
 </body>
 
 </html>

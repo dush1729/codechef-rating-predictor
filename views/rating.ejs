@@ -1,8 +1,11 @@
-<html>
+<!DOCTYPE html>
+
+<html lang="en">
 
 <head>
 	<title>Predictions - <%= contest %></title>
-	<link rel="stylesheet" id="theme" href="<%= theme %>" >
+	<link rel="stylesheet" id="theme" href="<%= theme %>">
+	<link rel="icon" href="/images/favicon.png">
 </head>
 
 <body>
@@ -18,7 +21,7 @@
 				<span>Last updated: <%= elapsed %></span>
 			</div>
 			<div class="col-1">
-				<img width="50" src="/images/switch.png" id="themeButton">
+				<img alt="Switch Theme" width="50" src="/images/switch.png" id="themeButton">
 			</div>
 		</div>
 
@@ -39,19 +42,19 @@
 					<% result.forEach((user) => { %>
 					<tr <% if(user.change > 0) { %> class="bg-success" <% } %> <% if(user.change < 0) { %>
 						class="bg-danger" <% } %> <% if(user.change == 0) { %> class="bg-primary" <% } %>>
-						<td><%= user.erank %></th>
-						<td><%= user.rank %></th>
+						<td><%= user.erank %></td>
+						<td><%= user.rank %></td>
 						<td><%= user.user %></td>
 						<td><%= user.previous %></td>
 						<td><%= user.rating %></td>
-						<th><%= user.change %></td>
+						<td><%= user.change %></td>
 					</tr>
 					<% }) %>
 				</tbody>
 			</table>
 		</div>
 	</div>
-	<script src="/js/rating.js" type="text/javascript"></script>
+	<script src="/js/rating.js"></script>
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
 		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
 		crossorigin="anonymous"></script>
