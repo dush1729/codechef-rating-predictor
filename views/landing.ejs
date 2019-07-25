@@ -60,12 +60,12 @@
                                     class="bg-danger" <% } %> <% if(change == 0) { %> class="bg-primary" <% } %>>
                                     <td><%= user.contest %></td>
                                     <td><%= user.type %></td>
-                                    <td><%= user.erank %></th>
-                                    <td><%= user.rank %></th>
+                                    <td><%= user.erank %></td>
+                                    <td><%= user.rank %></td>
                                     <td><%= user.previous %></td>
                                     <td><%= user.rating %></td>
-                                    <th><%= change %></td>
-                                    <th><%= user.elapsed %></td>
+                                    <td><%= change %></td>
+                                    <td><%= user.elapsed %></td>
                                 </tr>
                                 <% }) %>
                             </tbody>
@@ -88,7 +88,7 @@
                         </div>
                     </div>
 
-                    <div class="row" style="margin-top:10px;">
+                    <div class="row" style="margin-top:10px; margin-bottom: 100px;">
                         <div class="col-sm-4 text-center">
                             <select id="contestType" class="btn btn-outline-danger btn-lg">
                                 <option value="1">Long</option>
