@@ -73,7 +73,7 @@ MongoClient.connect(mongourl, function (err, db) {
 		var user = (req.cookies.user ? req.cookies.user : "");
 
 		var result = [];
-		datacollection.find({ user: user }).sort({ contest: 1 }).toArray().then(predictions => {
+		datacollection.find({ user: user }).sort({ contest: 1, type: 1 }).toArray().then(predictions => {
 			result = predictions;
 		}).then(() => {
 			return Promise.resolve(lastupdatecollection.find().toArray());
