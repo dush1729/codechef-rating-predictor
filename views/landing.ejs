@@ -6,6 +6,15 @@
     <title>Rating Predictor</title>
     <link rel="stylesheet" href="/css/landing.css">
     <link rel="icon" href="/images/favicon.png">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-144934197-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-144934197-1');
+    </script>
 </head>
 
 <body>
@@ -28,15 +37,17 @@
 
             <div class="card" style="margin-top: 10px">
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-sm-8">
-                            <input id="user" class="form-control" type="text" placeholder="Username"
-                                value="<%= user %>">
+                    <form id="form" onsubmit="saveUserAndRefresh()">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <input id="user" class="form-control" type="text" placeholder="Username"
+                                    value="<%= user %>">
+                            </div>
+                            <div class="col-sm-4">
+                                <a id="fetchButton" class="btn btn-primary btn-block" href="" role="button">Fetch</a>
+                            </div>
                         </div>
-                        <div class="col-sm-4">
-                            <a id="fetchButton" class="btn btn-primary btn-block" href="" role="button">Fetch</a>
-                        </div>
-                    </div>
+                    </form>
 
                     <div class="table table-responsive" style="margin-top: 10px">
                         <table class="table table-dark">
@@ -58,7 +69,9 @@
                                 <% var change = user.rating - user.previous %>
                                 <tr <% if(change > 0) { %> class="bg-success" <% } %> <% if(change < 0) { %>
                                     class="bg-danger" <% } %> <% if(change == 0) { %> class="bg-primary" <% } %>>
-                                    <td><%= user.contest %></td>
+                                    <td><a style="color: white"
+                                            href="https://www.codechef.com/<%= user.contest %>"><%= user.contest %></a>
+                                    </td>
                                     <td><%= user.type %></td>
                                     <td><%= user.erank %></td>
                                     <td><%= user.rank %></td>

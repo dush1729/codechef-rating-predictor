@@ -6,6 +6,15 @@
 	<title>Predictions - <%= contest %></title>
 	<link rel="stylesheet" id="theme" href="<%= theme %>">
 	<link rel="icon" href="/images/favicon.png">
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144934197-1"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
+
+		gtag('config', 'UA-144934197-1');
+	</script>
 </head>
 
 <body>
@@ -44,7 +53,8 @@
 						class="bg-danger" <% } %> <% if(user.change == 0) { %> class="bg-primary" <% } %>>
 						<td><%= user.erank %></td>
 						<td><%= user.rank %></td>
-						<td><%= user.user %></td>
+						<td><a style="color: white"
+								href="https://www.codechef.com/users/<%= user.user %>"><%= user.user %></a></td>
 						<td><%= user.previous %></td>
 						<td><%= user.rating %></td>
 						<td><%= user.change %></td>

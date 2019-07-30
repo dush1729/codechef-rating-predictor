@@ -86,6 +86,11 @@ document.getElementById("predictButton").addEventListener('auxclick', function (
 })
 
 document.getElementById("fetchButton").onclick = function () {
+    saveUserAndRefresh()
+    document.getElementById("form").submit()
+}
+
+function saveUserAndRefresh() {
     createCookie("user", document.getElementById("user").value, 365)
     window.location.reload()
 }
