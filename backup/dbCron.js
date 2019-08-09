@@ -30,6 +30,7 @@ exports = function () {
     db.collection("user").deleteMany({});
 
     const date = new Date();
+    date.setHours(date.getHours() + 6);
     const year = date.getFullYear();
     const month = date.getMonth();
     const monthsPassed = (2019 - year) * 12 + month;
