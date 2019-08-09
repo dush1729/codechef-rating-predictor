@@ -20,3 +20,8 @@ body {
 .bg-danger {
   background-color: #a10c1b !important;
 }
+
+.page-link {
+  background-color: #292721;
+  border-color: #32383e;
+}

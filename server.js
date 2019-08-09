@@ -125,7 +125,11 @@ MongoClient.connect(mongourl, function (err, db) {
 						throw err;
 
 					if (dateobj) {
-						datacollection.find({ contest: req.params.contestid, type: req.params.type }).sort({ rank: 1 }).toArray((err, result) => {
+						var page = (req.query.page ? req.query.page : 0);
+						if (page < 0) {
+							page = 0;
+						}
+						datacollection.find({ contest: req.params.contestid, type: req.params.type }).limit(1000).skip(page * 1000).sort({ rank: 1 }).toArray((err, result) => {
 							if (err)
 								throw err;
 
@@ -135,7 +139,17 @@ MongoClient.connect(mongourl, function (err, db) {
 
 							var typename = req.params.type[0].toUpperCase() + req.params.type.slice(1);
 							var theme = (req.cookies.theme ? req.cookies.theme : "/css/rating.css");
-							res.render('rating', { elapsed: elapsedTime(dateobj.date), contest: req.params.contestid, type: req.params.type, typename: typename, result: result, theme: theme });
+							datacollection.count({ contest: req.params.contestid, type: req.params.type }).then((count) => {
+								res.render('rating', {
+									elapsed: elapsedTime(dateobj.date),
+									contest: req.params.contestid,
+									type: req.params.type,
+									typename: typename,
+									result: result,
+									theme: theme,
+									pageCount: count / 1000
+								});
+							});
 						});
 					}
 					else {

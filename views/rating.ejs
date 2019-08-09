@@ -37,7 +37,17 @@
 			</div>
 		</div>
 
-		<div class="table table-responsive">
+		<div class="row justify-content-center">
+			<ul class="pagination pagination-sm mt-0 mb-1">
+				<% for(var i=0;i<=pageCount; i++) { %>
+				<li class="page-item"><a class="page-link"
+						href="/contest/<%= contest %>/<%= typename.toLowerCase() %>?page=<%= i %>"><%= i %></a>
+				</li>
+				<% } %>
+			</ul>
+		</div>
+
+		<div class="table table-responsive" style="margin-top: 10px;">
 			<table class="table table-dark">
 				<thead class="thead-dark">
 					<tr>
