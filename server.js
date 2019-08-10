@@ -147,7 +147,8 @@ MongoClient.connect(mongourl, function (err, db) {
 									typename: typename,
 									result: result,
 									theme: theme,
-									pageCount: count / 1000
+									pageCount: count / 1000,
+									selectedPage: page
 								});
 							});
 						});

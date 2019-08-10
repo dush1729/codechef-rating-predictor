@@ -40,7 +40,7 @@
 		<div class="row justify-content-center">
 			<ul class="pagination pagination-sm mt-0 mb-1">
 				<% for(var i=0;i<=pageCount; i++) { %>
-				<li class="page-item"><a class="page-link"
+				<li class="<%= i == selectedPage ? 'page-item active' : 'page-item' %>"><a class="page-link"
 						href="/contest/<%= contest %>/<%= typename.toLowerCase() %>?page=<%= i %>"><%= i %></a>
 				</li>
 				<% } %>

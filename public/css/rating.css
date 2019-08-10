@@ -25,3 +25,7 @@ body {
   background-color: #292721;
   border-color: #32383e;
 }
+
+.page-link:hover {
+  background-color: darkgray;
+}
