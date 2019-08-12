@@ -125,11 +125,27 @@ MongoClient.connect(mongourl, function (err, db) {
 						throw err;
 
 					if (dateobj) {
-						var page = (req.query.page ? req.query.page : 0);
-						if (page < 0) {
-							page = 0;
+						var page = (req.query.page ? req.query.page : 1);
+						if (page < 1) {
+							page = 1;
 						}
-						datacollection.find({ contest: req.params.contestid, type: req.params.type }).limit(1000).skip(page * 1000).sort({ rank: 1 }).toArray((err, result) => {
+						var perPage = (req.query.perPage ? req.query.perPage : 25);
+						if (perPage <= 10) {
+							perPage = 10;
+						}
+						else if (perPage <= 25) {
+							perPage = 25;
+						}
+						else if (perPage <= 50) {
+							perPage = 50;
+						}
+						else if (perPage <= 100) {
+							perPage = 100;
+						}
+						else {
+							perPage = 1000;
+						}
+						datacollection.find({ contest: req.params.contestid, type: req.params.type }).limit(perPage).skip((page - 1) * perPage).sort({ rank: 1 }).toArray((err, result) => {
 							if (err)
 								throw err;
 
@@ -147,8 +163,9 @@ MongoClient.connect(mongourl, function (err, db) {
 									typename: typename,
 									result: result,
 									theme: theme,
-									pageCount: count / 1000,
-									selectedPage: page
+									pageCount: count / perPage,
+									selectedPage: page,
+									perPage: perPage
 								});
 							});
 						});

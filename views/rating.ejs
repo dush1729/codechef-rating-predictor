@@ -37,14 +37,68 @@
 			</div>
 		</div>
 
-		<div class="row justify-content-center">
-			<ul class="pagination pagination-sm mt-0 mb-1">
-				<% for(var i=0;i<=pageCount; i++) { %>
-				<li class="<%= i == selectedPage ? 'page-item active' : 'page-item' %>"><a class="page-link"
-						href="/contest/<%= contest %>/<%= typename.toLowerCase() %>?page=<%= i %>"><%= i %></a>
-				</li>
-				<% } %>
-			</ul>
+		<div class="card-coloumns" style="margin-top: 10px">
+			<div class="card">
+				<div class="card-body">
+					<div class="row">
+						<div class="col-sm-4">
+							<h4>Entries Per Page</h4>
+						</div>
+						<div class="col-sm-8">
+							<ul class="pagination pagination mt-0 mb-0">
+								<li class="<%= perPage == 10 ? 'page-item active' : 'page-item' %>"><a class="page-link"
+										href="/contest/<%= contest %>/<%= typename.toLowerCase() %>?perPage=<%= 10 %>&page=<%= selectedPage %>">10</a>
+								</li>
+								<li class="<%= perPage == 25 ? 'page-item active' : 'page-item' %>"><a class="page-link"
+										href="/contest/<%= contest %>/<%= typename.toLowerCase() %>?perPage=<%= 25 %>&page=<%= selectedPage %>">25</a>
+								</li>
+								<li class="<%= perPage == 50 ? 'page-item active' : 'page-item' %>"><a class="page-link"
+										href="/contest/<%= contest %>/<%= typename.toLowerCase() %>?perPage=<%= 50 %>&page=<%= selectedPage %>">50</a>
+								</li>
+								<li class="<%= perPage == 100 ? 'page-item active' : 'page-item' %>"><a
+										class="page-link"
+										href="/contest/<%= contest %>/<%= typename.toLowerCase() %>?perPage=<%= 100 %>&page=<%= selectedPage %>">100</a>
+								</li>
+								<li class="<%= perPage == 1000 ? 'page-item active' : 'page-item' %>"><a
+										class="page-link"
+										href="/contest/<%= contest %>/<%= typename.toLowerCase() %>?perPage=<%= 1000 %>&page=<%= selectedPage %>">1000</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="card-coloumns" style="margin-top: 10px">
+			<div class="card">
+				<div class="card-body">
+					<div class="row">
+						<div class="col-sm-4">
+							<h4>Page Number</h4>
+						</div>
+						<div class="col-sm-8">
+							<ul class="pagination pagination mt-0 mb-0">
+								<% selectedPage = parseInt(selectedPage) %>
+								<% var pages = 0; %>
+								<% for(var i=Math.max(1,selectedPage-3);i<=Math.min(selectedPage+3,pageCount); i++, pages++) { %>
+								<li class="<%= i == selectedPage ? 'page-item active' : 'page-item' %>"><a
+										class="page-link"
+										href="/contest/<%= contest %>/<%= typename.toLowerCase() %>?perPage=<%= perPage %>&page=<%= i %>"><%= i %></a>
+								</li>
+								<% } %>
+								<% if(pages < 7) %>
+								<% for(var i=selectedPage+4;i<=pageCount && pages<7; i++, pages++) { %>
+								<li class="<%= i == selectedPage ? 'page-item active' : 'page-item' %>"><a
+										class="page-link"
+										href="/contest/<%= contest %>/<%= typename.toLowerCase() %>?perPage=<%= perPage %>&page=<%= i %>"><%= i %></a>
+								</li>
+								<% } %>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 
 		<div class="table table-responsive" style="margin-top: 10px;">

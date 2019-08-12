@@ -29,3 +29,7 @@ body {
 .page-link:hover {
   background-color: darkgray;
 }
+
+.card {
+  background-color: #32383e;
+}
