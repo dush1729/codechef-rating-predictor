@@ -163,9 +163,9 @@ MongoClient.connect(mongourl, function (err, db) {
 									typename: typename,
 									result: result,
 									theme: theme,
-									pageCount: count / perPage,
-									selectedPage: page,
-									perPage: perPage
+									pageCount: parseInt(count / perPage + 1),
+									selectedPage: parseInt(page),
+									perPage: parseInt(perPage)
 								});
 							});
 						});
