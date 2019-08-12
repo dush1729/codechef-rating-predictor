@@ -7,10 +7,11 @@
     color: white;
   }
   
-  body {
-    background: #200122; /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #6f0000, #200122); /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #6f0000, #200122); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  html, body {
+    background: #1E9600;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to bottom, #FF9933, #FFFFFF, #138808);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to bottom, #FF9933, #FFFFFF, #138808); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    height: 100%;
   }
   
   .card {
