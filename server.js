@@ -5,6 +5,22 @@ var cheerio = require("cheerio");
 var express = require("express");
 var app = express();
 var cookieParser = require('cookie-parser');
+var cronJob = require('cron').CronJob;
+
+var isWorking = false;
+new cronJob('*/4 * * * *', function () {
+	if (isWorking) {
+		return;
+	}
+	isWorking = true;
+	var status = require("./status.js");
+	var generator = require("./generate.js");
+	status(function () {
+		generator(function () {
+			isWorking = false;
+		})
+	});
+}, null, true);
 
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
@@ -66,10 +82,7 @@ MongoClient.connect(mongourl, function (err, db) {
 	var lastupdatecollection = db.collection("lastupdate");
 	var checklist = db.collection("checklist");
 
-	var processor = require("./process.js");
-
 	app.get('/', function (req, res) {
-		processor();
 		var user = (req.cookies.user ? req.cookies.user : "");
 
 		var result = [];
@@ -105,7 +118,6 @@ MongoClient.connect(mongourl, function (err, db) {
 			},
 			function (err, result) {
 				if (result) {
-					processor(true);
 					res.redirect('/contest/' + cid + '/all');
 				} else {
 					res.render("error", { message: "Couldnot add to checklist" });
@@ -114,7 +126,6 @@ MongoClient.connect(mongourl, function (err, db) {
 	})
 
 	app.get('/contest/:contestid/:type', function (req, res) {
-		processor();
 		checklist.findOne({ contest: req.params.contestid }, function (err, obj) {
 			if (err) {
 				return;
@@ -188,7 +199,6 @@ MongoClient.connect(mongourl, function (err, db) {
 	});
 
 	app.use(function (req, res) {
-		processor();
 		res.status(500);
 		res.render("error", { message: "Invalid link!" });
 	});
@@ -196,7 +206,4 @@ MongoClient.connect(mongourl, function (err, db) {
 	app.listen(process.env.PORT || 8080);
 
 	console.log('Listening on http://127.0.0.1:8080');
-
-	processor();
-
 });
