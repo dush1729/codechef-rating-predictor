@@ -8,7 +8,7 @@ var cookieParser = require('cookie-parser');
 var cronJob = require('cron').CronJob;
 
 var isWorking = false;
-new cronJob('*/4 * * * *', function () {
+new cronJob('*/10 * * * *', function () {
 	if (isWorking) {
 		return;
 	}
