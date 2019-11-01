@@ -3,6 +3,7 @@ var https = require("https");
 var util = require("util");
 var cheerio = require("cheerio");
 var async = require("async");
+var authenticate = require("./authenticate.js");
 
 var contestid;
 
@@ -15,20 +16,27 @@ function parseUserContest(code, funcproblem, callback, trycount) {
 		return;
 	}
 
-	var url = "https://www.codechef.com/api/contests/" + code;
-	execHttps(url, function (source) {
-		if (source.indexOf('"status":"success"') == -1) {
-			parseUserContest(code, funcproblem, callback, trycount - 1);
-			return;
+	authenticate.getBearer((err, result) => {
+		if (err) {
+			console.log(err)
+		} else {
+			var accessToken = result["result"]["data"]["access_token"]
+			var url = "https://api.codechef.com/contests/" + code;
+			execHttps(url, function (source) {
+				if (source.indexOf('"status":"OK"') == -1) {
+					parseUserContest(code, funcproblem, callback, trycount - 1);
+					return;
+				}
+
+				var obj = JSON.parse(source);
+
+				async.each(obj.result.data.content.problemsList, funcproblem, function (err) {
+					callback(err);
+				});
+
+			}, 3, accessToken);
 		}
-
-		var obj = JSON.parse(source);
-
-		async.each(obj.problems, funcproblem, function (err) {
-			callback(err);
-		});
-
-	}, 3);
+	});
 }
 
 function parseStatusPage(contestid, problemid, pageno, callback, trycount) {
@@ -105,7 +113,7 @@ module.exports = function (nextcall) {
 				contestid = ciid;
 
 				parseUserContest(contestid, function (problem, callback) {
-					var problemid = problem.code;
+					var problemid = problem.problemCode;
 					collection.findOne({ problemid: problemid }, function (err, obj) {
 						var lastpage = (obj !== null ? obj.pagedone : 0);
 						console.log(problemid, lastpage);

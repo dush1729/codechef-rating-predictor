@@ -3,3 +3,4 @@ cache
 process.txt
 .vscode/
 .gitignore
+app-env

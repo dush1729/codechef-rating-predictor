@@ -3,7 +3,7 @@ var https = require("https");
 var requrl = require("url");
 
 module.exports = function () {
-    this.execHttps = function (url, func, retry) {
+    this.execHttps = function (url, func, retry, accessToken) {
         console.log("Parsing", url, retry);
         var httpobj = http;
 
@@ -11,12 +11,13 @@ module.exports = function () {
             httpobj = https;
         }
 
+        var bearer = "Bearer " + accessToken
         const parsedURL = requrl.parse(url);
         const options = {
             protocol: parsedURL.protocol,
             hostname: parsedURL.hostname,
             path: parsedURL.path,
-            headers: { 'User-Agent': 'Mozilla/5.0' },
+            headers: { 'User-Agent': 'Mozilla/5.0', 'Authorization': bearer }
         };
 
         var source = "";

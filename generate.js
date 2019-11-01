@@ -5,6 +5,7 @@ var cheerio = require("cheerio");
 var fs = require("fs");
 var path = require("path");
 var async = require("async");
+var authenticate = require("./authenticate.js");
 
 var cacheDir = "cache";
 var parseTypes = ["all", "long", "short", "ltime"]; //date_versus_rating_all"];//, "date_versus_rating_long", "date_versus_rating_short", "date_versus_rating_ltime"];
@@ -162,7 +163,7 @@ function generateVolatility(callback) {
 }
 
 function generateRanklist(contestid, pageno, func) {
-	var url = util.format('https://www.codechef.com/api/rankings/%s?sortBy=user_handle&order=asc&page=%s&itemsPerPage=100', contestid, pageno);;
+	var url = util.format('https://api.codechef.com/rankings/%s', contestid);
 
 	/*
 	//for debugging
@@ -201,33 +202,40 @@ function generateRanklist(contestid, pageno, func) {
 		//fs.writeFile(filepath, source, 'utf8');
 	}
 	*/
-	execHttps(url, function (source) {
-		if (source.indexOf("availablePages") == -1) {
-			generateRanklist(contestid, pageno, func);
-			return;
+	authenticate.getBearer((err, result) => {
+		if (err) {
+			console.log(err)
+		} else {
+			var accessToken = result["result"]["data"]["access_token"]
+			execHttps(url, function (source) {
+				if (source.indexOf("availablePages") == -1) {
+					generateRanklist(contestid, pageno, func);
+					return;
+				}
+
+				var obj = JSON.parse(source);
+
+				obj.list.forEach(function (data) {
+					rankData[data.user_handle] = { rank: data.rank, handle: data.user_handle, oldrating: data.rating };
+					try {
+						usercollection.insert({ contestid: contestid, user: data.user_handle });
+					}
+					catch (ex) {
+					}
+					//console.log(data.user_handle, data.rank, data.rating);
+				});
+
+				var lastpage = obj.availablePages;
+
+				if (pageno < lastpage) {
+					setImmediate(generateRanklist, contestid, pageno + 1, func);
+				}
+				else {
+					func();
+				}
+			}, 4, accessToken);
 		}
-
-		var obj = JSON.parse(source);
-
-		obj.list.forEach(function (data) {
-			rankData[data.user_handle] = { rank: data.rank, handle: data.user_handle, oldrating: data.rating };
-			try {
-				usercollection.insert({ contestid: contestid, user: data.user_handle });
-			}
-			catch (ex) {
-			}
-			//console.log(data.user_handle, data.rank, data.rating);
-		});
-
-		var lastpage = obj.availablePages;
-
-		if (pageno < lastpage) {
-			setImmediate(generateRanklist, contestid, pageno + 1, func);
-		}
-		else {
-			func();
-		}
-	}, 4);
+	})
 }
 
 function calculateRating(callback) {
