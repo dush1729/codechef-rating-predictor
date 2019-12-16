@@ -16,6 +16,6 @@ module.exports.getBearer = function (callback) {
                 callback(error, null)
             });
     } else {
-        callback(data, null)
+        callback(null, data)
     }
 }
