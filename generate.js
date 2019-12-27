@@ -163,7 +163,7 @@ function generateVolatility(callback) {
 }
 
 function generateRanklist(contestid, pageno, func) {
-	var url = util.format('https://api.codechef.com/rankings/%s', contestid);
+	var url = util.format('https://api.codechef.com/rankings/%s?fields=username%2Crank%2Crating&offset=%s', contestid, pageno * 1500);
 
 	/*
 	//for debugging
@@ -208,31 +208,30 @@ function generateRanklist(contestid, pageno, func) {
 		} else {
 			var accessToken = result["result"]["data"]["access_token"]
 			execHttps(url, function (source) {
-				if (source.indexOf("availablePages") == -1) {
+				if (source.indexOf("unable to fetch rank list") != -1) {
+					func();
+					return;
+				} else if (source.indexOf("Rank List successfully fetched.") == -1) {
 					generateRanklist(contestid, pageno, func);
 					return;
 				}
 
-				var obj = JSON.parse(source);
+				var obj = JSON.parse(source).result.data.content;
 
-				obj.list.forEach(function (data) {
-					rankData[data.user_handle] = { rank: data.rank, handle: data.user_handle, oldrating: data.rating };
+				obj.forEach(function (data) {
+					rankData[data.username] = { rank: parseInt(data.rank), handle: data.username, oldrating: data.rating };
 					try {
-						usercollection.insert({ contestid: contestid, user: data.user_handle });
+						usercollection.update(
+							{ contestid: contestid, user: data.username },
+							{ contestid: contestid, user: data.username },
+							{ upsert: true });
 					}
 					catch (ex) {
 					}
 					//console.log(data.user_handle, data.rank, data.rating);
 				});
 
-				var lastpage = obj.availablePages;
-
-				if (pageno < lastpage) {
-					setImmediate(generateRanklist, contestid, pageno + 1, func);
-				}
-				else {
-					func();
-				}
+				setImmediate(generateRanklist, contestid, pageno + 1, func);
 			}, 4, accessToken);
 		}
 	})
@@ -425,7 +424,7 @@ module.exports = function (nextcall) {
 				}
 				*/
 
-				generateRanklist(contestid, 1, function () {
+				generateRanklist(contestid, 0, function () {
 					lastRank = Object.keys(rankData).length + 1;
 					generateVolatility(function () {
 						calculateRating(function () {

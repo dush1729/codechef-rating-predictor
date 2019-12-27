@@ -1,7 +1,4 @@
-var http = require("http");
-var https = require("https");
 var util = require("util");
-var cheerio = require("cheerio");
 var async = require("async");
 var authenticate = require("./authenticate.js");
 
@@ -10,75 +7,48 @@ var contestid;
 var usercollection;
 var collection;
 
-function parseUserContest(code, funcproblem, callback, trycount) {
-	if (trycount < 0) {
-		checklistcollection.findOneAndDelete({ 'contest': code });
-		return;
-	}
+function parseStatusPage(contestid, pageno, callback) {
+
+	var url = util.format('https://api.codechef.com/submissions?contestCode=%s&offset=%s&limit=20&fields=username', contestid, pageno * 20);
 
 	authenticate.getBearer((err, result) => {
 		if (err) {
 			console.log(err)
 		} else {
 			var accessToken = result["result"]["data"]["access_token"]
-			var url = "https://api.codechef.com/contests/" + code;
+
 			execHttps(url, function (source) {
-				if (source.indexOf('"status":"OK"') == -1) {
-					parseUserContest(code, funcproblem, callback, trycount - 1);
-					return;
+				if (source.indexOf("API request limit exhausted") != -1) {
+					// TODO find fix(add something like rate limiter maybe?)
+					console.log("API request limit exhausted :(")
+					// try after sometime
+					return
 				}
 
-				var obj = JSON.parse(source);
+				if (source.indexOf("no submissions found for this search") != -1) {
+					// all submissions parsed
+					callback()
+					return
+				}
 
-				async.each(obj.result.data.content.problemsList, funcproblem, function (err) {
-					callback(err);
-				});
+				var submissions = JSON.parse(source).result.data.content;
+				submissions.forEach(submission => {
+					try {
+						usercollection.update(
+							{ contestid: contestid, user: submission.username },
+							{ contestid: contestid, user: submission.username },
+							{ upsert: true });
+					}
+					catch (ex) {
+					}
+				})
 
-			}, 3, accessToken);
+				collection.update({ contestid: contestid }, { $set: { pagedone: pageno } }, { upsert: true });
+
+				parseStatusPage(contestid, pageno + 1, callback);
+			}, 4, accessToken);
 		}
-	});
-}
-
-function parseStatusPage(contestid, problemid, pageno, callback, trycount) {
-	/*
-	if (trycount < 0)
-	{
-		callback(Error("Error in parsing status page, Exceeded try counts " + contestid + " " + problemid + " " + pageno));
-		return;
-	}
-	*/
-
-	var url = util.format('https://www.codechef.com/%s/status/%s?page=%s&sort_by=Date%2FTime&sorting_order=asc', contestid, problemid, pageno);;
-	execHttps(url, function (source) {
-		var $ = cheerio.load(source);
-		var lastpage = parseInt($('.pageinfo').text().split(' ')[2]) - 1;
-
-		if (source.indexOf("pageinfo") == -1) {
-			//parseStatusPage(contestid, problemid, pageno, callback, trycount-1);
-			//return;
-			lastpage = pageno;
-		}
-
-		$('table[class="dataTable"]>tbody>tr>td>a').each(function (i, data) {
-			var username = $(data).attr('title');
-			try {
-				usercollection.insert({ contestid: contestid, user: username });
-			}
-			catch (ex) {
-			}
-		});
-
-		collection.update({ problemid: problemid }, { $set: { pagedone: pageno } }, { upsert: true });
-
-		console.log("Current page", pageno, lastpage, url, $('.pageinfo').text());
-
-		if (pageno < lastpage) {
-			parseStatusPage(contestid, problemid, pageno + 1, callback, 2);
-		}
-		else {
-			callback();
-		}
-	}, 4);
+	})
 }
 
 require("./helper.js")();
@@ -112,24 +82,10 @@ module.exports = function (nextcall) {
 			async.eachSeries(contestIDS, function (ciid, callback) {
 				contestid = ciid;
 
-				parseUserContest(contestid, function (problem, callback) {
-					var problemid = problem.problemCode;
-					collection.findOne({ problemid: problemid }, function (err, obj) {
-						var lastpage = (obj !== null ? obj.pagedone : 0);
-						console.log(problemid, lastpage);
-						parseStatusPage(contestid, problemid, lastpage, callback, 9);
-					});
-				},
-					function (err) {
-						if (err) {
-							console.log("Error in parsing", contestid, err);
-						}
-						else {
-							console.log("Completed parsing", contestid);
-						}
-
-						callback(err);
-					}, 9);
+				collection.findOne({ contestid: contestid }, function (err, obj) {
+					var lastpage = (obj !== null ? obj.pagedone : 0);
+					parseStatusPage(contestid, lastpage, callback);
+				});
 			},
 				function (err) {
 					if (err) {
