@@ -19,9 +19,11 @@ function parseStatusPage(contestid, pageno, callback) {
 
 			execHttps(url, function (source) {
 				if (source.indexOf("API request limit exhausted") != -1) {
-					// TODO find fix(add something like rate limiter maybe?)
 					console.log("API request limit exhausted :(")
-					// try after sometime
+					// try after 5 minutes
+					setTimeout(function () {
+						parseStatusPage(contestid, pageno, callback)
+					}, 5 * 60 * 1000)
 					return
 				}
 
