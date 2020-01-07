@@ -95,7 +95,7 @@ MongoClient.connect(mongourl, function (err, db) {
 				element.elapsed = filterIt(lastUpdated, element.contest)
 			});
 		}).then(() => {
-			res.render('landing', { result: result, user: user });
+			res.render('landing_down', { result: result, user: user });
 		}).catch(e => {
 			console.error(e);
 		});
